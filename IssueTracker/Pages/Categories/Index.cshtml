@@ -1,0 +1,61 @@
+﻿@page
+@model IssueTracker.Pages.Categories.IndexModel
+
+@{
+    ViewData["Title"] = "All Categories";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-auto">
+    @if (TempData["DeleteStatus"] != null)
+    {
+        var className = "";
+        if (TempData["DeleteStatus"].ToString() == "Fail")
+        {
+            className = "alert-danger";
+        }
+        else
+        {
+            className = "alert-success";
+        }
+        <div class="alert @className alert-dismissible fade show" role="alert">
+            @TempData["StatusMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+
+    <h1>All Categories</h1>
+    <p>
+        <a asp-page="Create">Create New</a>
+    </p>
+
+    <div class="col-md-5">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Category[0].Name)
+                    </th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Category)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item.CategoryId">Edit</a> |
+                            <a asp-page="./Delete" asp-route-id="@item.CategoryId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

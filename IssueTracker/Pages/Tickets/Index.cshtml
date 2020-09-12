@@ -2,71 +2,150 @@
 @model IssueTracker.Pages.Tickets.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = Model.CurrentView;
 }
 
-<h1>Index</h1>
+<div class="col-md-auto">
+    <div>
+        <h1>@ViewBag.Title</h1>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].CreatedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].UserAssigned)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].UserCreator)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ticket[0].Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Ticket) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserAssigned.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserCreator.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status.Name)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.TicketId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.TicketId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.TicketId">Delete</a>
-            </td>
-        </tr>
+        <p>
+            <a asp-page="Create">Add New</a>
+        </p>
+    </div>
+    <div class="row no-gutters">
+        <form asp-page="./Index" method="get">
+            <div class="row no-gutters d-flex align-items-center justify-content-center">
+                <div class="form-group no-color">
+                    Find by name:
+                    <input type="text" name="searchString" value="@Model.CurrentSearch" />
+                </div>
+                <div class="form-group no-color ml-2">
+                    Status:
+                    <select name="currentFilter" style="height:75%">
+                        @if (Model.CurrentFilter == 0)
+                        {
+                            <option value="0" disabled selected>Select Status</option>
+                        }
+                        else
+                        {
+                            <option value="0" disabled>Select Status</option>
+                        }
+
+                        @foreach (var item in Model.StatusList)
+                        {
+                            @if (item.StatusId == Model.CurrentFilter)
+                            {
+                                <option value="@item.StatusId" selected>@item.Name</option>
+                            }
+                            else
+                            {
+                                <option value="@item.StatusId">@item.Name</option>
+                            }
+
+                        }
+                    </select>
+                </div>
+                <div class="form-group no-color ml-2">
+                    <input type="submit" value="Search" class="btn btn-primary" /> |
+                    <a asp-page="./Index">Back to full List</a>
+                </div>
+                
+            </div>
+        </form>
+        <form asp-page="./Index" method="get" asp-route-currentSearch="@Model.CurrentSearch">
+            
+        </form>
+    </div>
+</div>
+<div class="col-md-auto">
+    @foreach (var item in Model.IssueTickets)
+    {
+        var className = "card-header text-white ";
+        switch (item.StatusId)
+        {
+            case 1:
+                className = className + "bg-info";
+                break;
+            case 2:
+                className = className + "bg-warning";
+                break;
+            case 3:
+                className = className + "bg-success";
+                break;
+            case 4:
+                className = className + "bg-secondary";
+                break;
+            default:
+                break;
+        }
+        <div class="card mb-3">
+            <div class="row no-gutters">
+                <div class="@className col-sm-1 d-flex align-items-center justify-content-center">
+                    <div>@Html.DisplayFor(modelItem => item.Status.Name)</div>
+                </div>
+                <div class="col-md-9">
+                    <div class="card-body">
+                        <div class="row no-gutters">
+                            <div>
+                                <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
+                            </div>
+                            @if ((await AuthorizationService.AuthorizeAsync(User, item, TicketOperations.Edit)).Succeeded &&
+                           (await AuthorizationService.AuthorizeAsync(User, item, TicketOperations.Delete)).Succeeded)
+                            {
+                                <div class="ml-3">
+                                    <a asp-page="./Edit" asp-route-id="@item.TicketId">Edit</a> |
+                                    <a asp-page="./Delete" asp-route-id="@item.TicketId">Delete</a>
+                                </div>
+                            }
+                            @if ((await AuthorizationService.AuthorizeAsync(User, item, TicketOperations.Update)).Succeeded)
+                            {
+                                <div class="ml-3">
+                                    <a asp-page="./Update" asp-route-id="@item.TicketId">Update</a>
+                                </div>
+                            }
+                        </div>
+                        <p class="card-text">@Html.DisplayFor(modelItem => item.Description)</p>
+                        <p class="card-text">Category: @Html.DisplayFor(modelItem => item.Category.Name)</p>
+                    </div>
+                </div>
+                <div class="col-sm-2 d-flex align-items-center justify-content-center">
+                    <div>
+                       
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                Created: @Html.DisplayFor(modelItem => item.CreatedDate) |
+                Assignee: @Html.DisplayFor(modelItem => item.UserAssigned.UserName) |
+                Owner: @Html.DisplayFor(modelItem => item.UserCreator.UserName)
+            </div>
+        </div>
+    }
+</div>
+
+@{
+    var prevDisabled = !Model.IssueTickets.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.IssueTickets.HasNextPage ? "disabled" : "";
 }
-    </tbody>
-</table>
+
+<div class="col-md-auto mb-5">
+    <a asp-page="./Index"
+       asp-route-pageIndex="@(Model.IssueTickets.PageIndex - 1)"
+       asp-route-currentFilter="@Model.CurrentFilter"
+       asp-route-currentSearch="@Model.CurrentSearch"
+       asp-route-view="@Model.CurrentView"
+       class="btn btn-primary @prevDisabled">
+        Previous
+    </a>
+    <a asp-page="./Index"
+       asp-route-pageIndex="@(Model.IssueTickets.PageIndex + 1)"
+       asp-route-currentFilter="@Model.CurrentFilter"
+       asp-route-currentSearch="@Model.CurrentSearch"
+       asp-route-view="@Model.CurrentView"
+       class="btn btn-primary @nextDisabled">
+        Next
+    </a>
+</div>

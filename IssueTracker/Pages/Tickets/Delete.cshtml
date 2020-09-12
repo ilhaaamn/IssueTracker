@@ -34,25 +34,25 @@
             @Html.DisplayNameFor(model => model.Ticket.UserAssigned)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Ticket.UserAssigned.UserId)
+            @Html.DisplayFor(model => model.Ticket.UserAssigned.UserName)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Ticket.UserCreator)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Ticket.UserCreator.UserId)
+            @Html.DisplayFor(model => model.Ticket.UserCreator.UserName)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Ticket.Category)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Ticket.Category.CategoryId)
+            @Html.DisplayFor(model => model.Ticket.Category.Name)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Ticket.Status)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Ticket.Status.StatusId)
+            @Html.DisplayFor(model => model.Ticket.Status.Name)
         </dd>
     </dl>
     

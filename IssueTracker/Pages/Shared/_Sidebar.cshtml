@@ -1,0 +1,86 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using IssueTracker.Areas.Identity.Data
+
+@inject SignInManager<IssueTrackerUser> SignInManager
+@inject UserManager<IssueTrackerUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+<nav class="col-md-2 d-none d-md-block bg-light sidebar pl-3 pt-5">
+    <div class="sidebar-sticky">
+        <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Issue Tickets</span>
+        </h5>
+        <ul class="nav flex-column mb-2">
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Tickets/Index">
+                    <span data-feather="file-text"></span>
+                    All Issues
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Tickets/Index" asp-route-view="My Tickets">
+                    <span data-feather="file-text"></span>
+                    My Tickets
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Tickets/Index" asp-route-view="Assigned Tickets">
+                    <span data-feather="file-text"></span>
+                    Assignment
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="sidebar-sticky">
+        <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Status</span>
+        </h5>
+        <ul class="nav flex-column mb-2">
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Tickets/Index" asp-route-currentFilter="1">
+                    <span data-feather="file-text"></span>
+                    Open
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Tickets/Index" asp-route-currentFilter="2">
+                    <span data-feather="file-text"></span>
+                    In Progress
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Tickets/Index" asp-route-currentFilter="3">
+                    <span data-feather="file-text"></span>
+                    Done
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Tickets/Index" asp-route-currentFilter="4">
+                    <span data-feather="file-text"></span>
+                    Closed
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="sidebar-sticky">
+        <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span>Category</span>
+        </h5>
+        <ul class="nav flex-column mb-2">
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Categories/Index">
+                    <span data-feather="file-text"></span>
+                    All Categories
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" asp-page="/Categories/Create">
+                    <span data-feather="file-text"></span>
+                    Add Category
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+}

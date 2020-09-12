@@ -3,6 +3,10 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "IssueTrackerContext"
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "IssueTrackerDbContextConnection"
     }
   }
 }

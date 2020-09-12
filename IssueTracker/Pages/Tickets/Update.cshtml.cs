@@ -15,13 +15,9 @@ using IssueTracker.Authorization;
 
 namespace IssueTracker.Pages.Tickets
 {
-    [Authorize]
-    public class EditModel : BasePageModel
+    public class UpdateModel : BasePageModel
     {
-        public EditModel(IssueTrackerContext context,
-                        IAuthorizationService authorizationService,
-                        UserManager<IssueTrackerUser> userManager)
-                        : base(context, authorizationService, userManager)
+        public UpdateModel(IssueTrackerContext context, IAuthorizationService authorizationService, UserManager<IssueTrackerUser> userManager) : base(context, authorizationService, userManager)
         {
         }
 
@@ -48,7 +44,7 @@ namespace IssueTracker.Pages.Tickets
 
             var isAuthorized = await AuthorizationService.AuthorizeAsync(
                                                         User, Ticket,
-                                                        TicketOperations.Edit);
+                                                        TicketOperations.Update);
             if (!isAuthorized.Succeeded)
             {
                 return Forbid();
@@ -63,31 +59,25 @@ namespace IssueTracker.Pages.Tickets
 
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(int id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            // Fetch Contact from DB to get OwnerID.
-            var ticket = await Context
-                .Ticket.AsNoTracking()
-                .FirstOrDefaultAsync(m => m.TicketId == id);
-
-            if (ticket == null)
-            {
-                return NotFound();
-            }
-
             var isAuthorized = await AuthorizationService.AuthorizeAsync(
                                                         User, Ticket,
-                                                        TicketOperations.Edit);
+                                                        TicketOperations.Update);
             if (!isAuthorized.Succeeded)
             {
                 return Forbid();
             }
-            /*Ticket.CreatorId = ticket.CreatorId;*/
+
+            var updateTicket = Context.Ticket.First(c => c.TicketId == Ticket.TicketId);
+            updateTicket.StatusId = Ticket.StatusId;
+            Ticket = updateTicket;
+
             Context.Attach(Ticket).State = EntityState.Modified;
 
             try

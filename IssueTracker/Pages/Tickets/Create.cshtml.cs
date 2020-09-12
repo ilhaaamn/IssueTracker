@@ -7,24 +7,30 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using IssueTracker.Data;
 using IssueTracker.Models;
+using IssueTracker.Areas.Identity.Data;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using IssueTracker.Authorization;
 
 namespace IssueTracker.Pages.Tickets
 {
-    public class CreateModel : PageModel
+    [Authorize]
+    public class CreateModel : BasePageModel
     {
-        private readonly IssueTracker.Data.IssueTrackerContext _context;
-
-        public CreateModel(IssueTracker.Data.IssueTrackerContext context)
+        public CreateModel(IssueTrackerContext context,
+                        IAuthorizationService authorizationService,
+                        UserManager<IssueTrackerUser> userManager)
+                        : base(context, authorizationService, userManager)
         {
-            _context = context;
         }
 
         public IActionResult OnGet()
         {
-        ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name");
-        ViewData["StatusId"] = new SelectList(_context.Statuses, "StatusId", "Name");
-        ViewData["AssigneeId"] = new SelectList(_context.Users, "UserId", "Name");
-        ViewData["CreatorId"] = new SelectList(_context.Users, "UserId", "Name");
+            ViewData["CategoryId"] = new SelectList(Context.Categories, "CategoryId", "Name");
+            ViewData["StatusId"] = new SelectList(Context.Statuses, "StatusId", "Name");
+            ViewData["AssigneeId"] = new SelectList(Context.Users, "Id", "UserName");
+            ViewData["CreatorId"] = new SelectList(Context.Users, "Id", "UserName");
             return Page();
         }
 
@@ -40,8 +46,24 @@ namespace IssueTracker.Pages.Tickets
                 return Page();
             }
 
-            _context.Ticket.Add(Ticket);
-            await _context.SaveChangesAsync();
+            Ticket.CreatorId = UserManager.GetUserId(User);
+
+            // requires using ContactManager.Authorization;
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                                                        User, Ticket,
+                                                        TicketOperations.Create);
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var user = await UserManager.GetUserAsync(User);
+            Ticket.CreatorId = user.Id;
+            Ticket.StatusId = 1;
+            Ticket.CreatedDate = DateTime.Now;
+
+            Context.Ticket.Add(Ticket);
+            await Context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }

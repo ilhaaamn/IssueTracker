@@ -11,6 +11,7 @@ namespace IssueTracker.Models
         [Key]
         public int CategoryId { get; set; }
         [DataType(DataType.Text)]
+        [Required(ErrorMessage = "This field cannot be empty.")]
         public string Name { get; set; }
 
         public ICollection<Ticket> Tickets { get; set; }

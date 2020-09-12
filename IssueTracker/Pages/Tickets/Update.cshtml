@@ -1,45 +1,84 @@
 ﻿@page
-@model IssueTracker.Pages.Tickets.EditModel
+@model IssueTracker.Pages.Tickets.UpdateModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Update Status";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1>Update Status</h1>
 
-<h4>Ticket</h4>
+<h4>Issue Ticket</h4>
 <hr />
+<dl class="row">
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Ticket.Name)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Ticket.Name)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Ticket.Description)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Ticket.Description)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Ticket.CreatedDate)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Ticket.CreatedDate)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Ticket.UserAssigned)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Ticket.UserAssigned.UserName)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Ticket.UserCreator)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Ticket.UserCreator.UserName)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Ticket.Category)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Ticket.Category.Name)
+    </dd>
+</dl>
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Ticket.TicketId" />
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Ticket.Name" class="control-label"></label>
-                <input asp-for="Ticket.Name" class="form-control" />
+                <input asp-for="Ticket.Name" class="form-control"/>
                 <span asp-validation-for="Ticket.Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Ticket.Description" class="control-label"></label>
                 <textarea asp-for="Ticket.Description" class="form-control"></textarea>
                 <span asp-validation-for="Ticket.Description" class="text-danger"></span>
             </div>
             <div class="form-group" hidden>
                 <label asp-for="Ticket.CreatedDate" class="control-label"></label>
-                <input asp-for="Ticket.CreatedDate" class="form-control" />
+                <input asp-for="Ticket.CreatedDate" class="form-control "/>
                 <span asp-validation-for="Ticket.CreatedDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Ticket.AssigneeId" class="control-label"></label>
                 <select asp-for="Ticket.AssigneeId" class="form-control" asp-items="ViewBag.AssigneeId"></select>
                 <span asp-validation-for="Ticket.AssigneeId" class="text-danger"></span>
             </div>
-            <div class="form-group" hidden>
+            <div class="form-group " hidden>
                 <label asp-for="Ticket.CreatorId" class="control-label"></label>
                 <select asp-for="Ticket.CreatorId" class="form-control" asp-items="ViewBag.CreatorId"></select>
                 <span asp-validation-for="Ticket.CreatorId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Ticket.CategoryId" class="control-label"></label>
                 <select asp-for="Ticket.CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
                 <span asp-validation-for="Ticket.CategoryId" class="text-danger"></span>

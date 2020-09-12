@@ -7,16 +7,22 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using IssueTracker.Data;
 using IssueTracker.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using IssueTracker.Areas.Identity.Data;
+using IssueTracker.Authorization;
 
 namespace IssueTracker.Pages.Tickets
 {
-    public class DeleteModel : PageModel
+    [Authorize]
+    public class DeleteModel : BasePageModel
     {
-        private readonly IssueTracker.Data.IssueTrackerContext _context;
 
-        public DeleteModel(IssueTracker.Data.IssueTrackerContext context)
+        public DeleteModel(IssueTrackerContext context,
+                        IAuthorizationService authorizationService,
+                        UserManager<IssueTrackerUser> userManager)
+                        : base(context, authorizationService, userManager)
         {
-            _context = context;
         }
 
         [BindProperty]
@@ -29,11 +35,19 @@ namespace IssueTracker.Pages.Tickets
                 return NotFound();
             }
 
-            Ticket = await _context.Ticket
+            Ticket = await Context.Ticket
                 .Include(t => t.Category)
                 .Include(t => t.Status)
                 .Include(t => t.UserAssigned)
                 .Include(t => t.UserCreator).FirstOrDefaultAsync(m => m.TicketId == id);
+
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                                            User, Ticket,
+                                            TicketOperations.Delete);
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
 
             if (Ticket == null)
             {
@@ -49,12 +63,20 @@ namespace IssueTracker.Pages.Tickets
                 return NotFound();
             }
 
-            Ticket = await _context.Ticket.FindAsync(id);
+            Ticket = await Context.Ticket.FindAsync(id);
+
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                                                        User, Ticket,
+                                                        TicketOperations.Delete);
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
 
             if (Ticket != null)
             {
-                _context.Ticket.Remove(Ticket);
-                await _context.SaveChangesAsync();
+                Context.Ticket.Remove(Ticket);
+                await Context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IssueTracker.Areas.Identity.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -23,15 +24,15 @@ namespace IssueTracker.Models
 
         [DisplayName("Assignee")]
         [ForeignKey("UserAssigned")]
-        public int? AssigneeId { get; set; }
+        public string? AssigneeId { get; set; }
         [DisplayName("Owner")]
         [ForeignKey("UserCreator")]
-        public int CreatorId { get; set; }
+        public string CreatorId { get; set; }
 
         [DisplayName("Assignee")]
-        public virtual User UserAssigned { get; set; }
+        public virtual IssueTrackerUser UserAssigned { get; set; }
         [DisplayName("Owner")]
-        public virtual User UserCreator { get; set; }
+        public virtual IssueTrackerUser UserCreator { get; set; }
 
         [Required(ErrorMessage = "This field is required.")]
         [DisplayName("Category")]

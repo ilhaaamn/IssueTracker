@@ -7,16 +7,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using IssueTracker.Data;
 using IssueTracker.Models;
+using Microsoft.AspNetCore.Authorization;
+using IssueTracker.Authorization;
+using Microsoft.AspNetCore.Identity;
+using IssueTracker.Areas.Identity.Data;
 
 namespace IssueTracker.Pages.Tickets
 {
-    public class DetailsModel : PageModel
+    [Authorize]
+    public class DetailsModel : BasePageModel
     {
-        private readonly IssueTracker.Data.IssueTrackerContext _context;
-
-        public DetailsModel(IssueTracker.Data.IssueTrackerContext context)
+        public DetailsModel(IssueTrackerContext context,
+                        IAuthorizationService authorizationService,
+                        UserManager<IssueTrackerUser> userManager)
+                        : base(context, authorizationService, userManager)
         {
-            _context = context;
         }
 
         public Ticket Ticket { get; set; }
@@ -28,11 +33,19 @@ namespace IssueTracker.Pages.Tickets
                 return NotFound();
             }
 
-            Ticket = await _context.Ticket
+            Ticket = await Context.Ticket
                 .Include(t => t.Category)
                 .Include(t => t.Status)
                 .Include(t => t.UserAssigned)
                 .Include(t => t.UserCreator).FirstOrDefaultAsync(m => m.TicketId == id);
+
+            var isAuthorized = await AuthorizationService.AuthorizeAsync(
+                                           User, Ticket,
+                                           TicketOperations.Read);
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
 
             if (Ticket == null)
             {
